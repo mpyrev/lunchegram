@@ -1,0 +1,12 @@
+.idea/
+__pycache__/
+/static/
+/media/
+local_settings.py
+*.sqlite3
+node_modules/
+*.sock
+celerybeat-schedule.*
+celerybeat.pid
+/*.ini
+/.python-version
