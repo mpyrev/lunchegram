@@ -25,7 +25,7 @@ SECRET_KEY = 'x@0ov86q!+hfe)i)wwp62j@oo19e8rhl1o)8rn)p6l+k0dkd*1'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['53f998f5.ngrok.io', '127.0.0.1']
 
 SITE_ID = 1
 
@@ -43,10 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
 
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.telegram',
+    'social_django',
 
     'accounts',
     'core',
@@ -83,8 +80,8 @@ TEMPLATES = [
 WSGI_APPLICATION = 'lunchegram.wsgi.application'
 
 AUTHENTICATION_BACKENDS = [
+    'social_core.backends.telegram.TelegramAuth',
     'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
 
@@ -121,7 +118,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru-RU'
 
 TIME_ZONE = 'UTC'
 
@@ -136,3 +133,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+# Social Auth
+
+SOCIAL_AUTH_TELEGRAM_BOT_TOKEN = os.environ.get('LUNCHEGRAM_BOT_TOKEN')
