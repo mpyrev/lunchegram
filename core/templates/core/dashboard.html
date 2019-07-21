@@ -1,0 +1,20 @@
+{% extends 'core/base_site.html' %}
+
+{% load core %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block h1 %}Dashboard{% endblock %}
+
+{% block content %}
+    <p>My companies:</p>
+    <ul>
+    {% for owned_company in owned_companies %}
+        {% invite_url owned_company as invite_url %}
+        <li>{{ owned_company }} - {{ invite_url|urlize }}</li>
+    {% empty %}
+        <li>No companies</li>
+    {% endfor %}
+    </ul>
+    <a href="{% url 'company_add' %}" class="btn btn-primary"><i class="fa fa-plus"></i> Add company</a>
+{% endblock %}

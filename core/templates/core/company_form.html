@@ -1,0 +1,15 @@
+{% extends 'core/base_site.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block h1 %}
+    {% if instance.pk %}
+        Edit company {{ instance }}
+    {% else %}
+        Add company
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    {% crispy form %}
+{% endblock %}

@@ -1,103 +1,167 @@
 {% extends 'base.html' %}
 
 {% load static %}
+{% load telegram %}
 
 {% block css %}
     {{ block.super }}
-    <!-- Custom styles for this template -->
-    <link href="{% static 'core/core.css' %}" rel="stylesheet">
+    <link href="{% static 'fontawesome/css/all.min.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'sb-admin/css/sb-admin.min.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block body %}
     {% block nav %}
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
-            <div class="container">
-                <a class="navbar-brand js-scroll-trigger" href="#page-top">Lunchegram</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarResponsive">
-                    <ul class="navbar-nav ml-auto">
-                        <li class="nav-item">
-                            <a class="nav-link js-scroll-trigger" href="#about">About</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link js-scroll-trigger" href="#services">Services</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link js-scroll-trigger" href="#contact">Contact</a>
-                        </li>
-                    </ul>
-                </div>
+        <nav class="navbar navbar-expand navbar-dark bg-primary static-top">
+
+            <a class="navbar-brand" href="#">Lunchegram</a>
+
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Link</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Dropdown
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="#">Action</a>
+                            <a class="dropdown-item" href="#">Another action</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#">Something else here</a>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+                    </li>
+                </ul>
+                <form class="form-inline my-2 my-lg-0">
+                    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                </form>
             </div>
         </nav>
     {% endblock %}
 
-    {% block header %}
-        <header class="bg-primary text-white">
-            <div class="container text-center">
-                <h1>Lunchegram</h1>
-                <p class="lead">Add random lunches to your office</p>
-                <script async src="https://telegram.org/js/telegram-widget.js?6" data-telegram-login="lunchegram_bot" data-size="large" data-auth-url="http://53f998f5.ngrok.io/auth/complete/telegram" data-request-access="write"></script>
-            </div>
-        </header>
-    {% endblock %}
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <ul class="sidebar navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'dashboard' %}">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            {% if request.user.is_staff %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'admin:index' %}">
+                        <i class="fas fa-fw fa-wrench"></i>
+                        <span>Admin</span>
+                    </a>
+                </li>
+            {% endif %}
+{#            <li class="nav-item dropdown">#}
+{#                <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">#}
+{#                    <i class="fas fa-fw fa-folder"></i>#}
+{#                    <span>Pages</span>#}
+{#                </a>#}
+{#                <div class="dropdown-menu" aria-labelledby="pagesDropdown">#}
+{#                    <h6 class="dropdown-header">Login Screens:</h6>#}
+{#                    <a class="dropdown-item" href="login.html">Login</a>#}
+{#                    <a class="dropdown-item" href="register.html">Register</a>#}
+{#                    <a class="dropdown-item" href="forgot-password.html">Forgot Password</a>#}
+{#                    <div class="dropdown-divider"></div>#}
+{#                    <h6 class="dropdown-header">Other Pages:</h6>#}
+{#                    <a class="dropdown-item" href="404.html">404 Page</a>#}
+{#                    <a class="dropdown-item active" href="blank.html">Blank Page</a>#}
+{#                </div>#}
+{#            </li>#}
+{#            <li class="nav-item">#}
+{#                <a class="nav-link" href="charts.html">#}
+{#                    <i class="fas fa-fw fa-chart-area"></i>#}
+{#                    <span>Charts</span></a>#}
+{#            </li>#}
+{#            <li class="nav-item">#}
+{#                <a class="nav-link" href="tables.html">#}
+{#                    <i class="fas fa-fw fa-table"></i>#}
+{#                    <span>Tables</span></a>#}
+{#            </li>#}
+        </ul>
 
-    {% block content %}
-        <section id="about">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-8 mx-auto">
-                        <h2>About this page</h2>
-                        <p class="lead">This is a great place to talk about your webpage. This template is purposefully unstyled so you can use it as a boilerplate or starting point for you own landing page designs! This template features:</p>
-                        <ul>
-                            <li>Clickable nav links that smooth scroll to page sections</li>
-                            <li>Responsive behavior when clicking nav links perfect for a one page website</li>
-                            <li>Bootstrap's scrollspy feature which highlights which section of the page you're on in the navbar</li>
-                            <li>Minimal custom CSS so you are free to explore your own unique design options</li>
-                        </ul>
+        <div id="content-wrapper">
+
+            <div class="container-fluid">
+
+                <!-- Breadcrumbs-->
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="index.html">Dashboard</a>
+                    </li>
+                    <li class="breadcrumb-item active">Blank Page</li>
+                </ol>
+
+                <!-- Page Content -->
+                <h1>{% block h1 %}h1 here{% endblock %}</h1>
+                <hr>
+                {% block content %}
+                {% endblock %}
+
+            </div>
+            <!-- /.container-fluid -->
+
+            <!-- Sticky Footer -->
+            <footer class="sticky-footer">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright © Lunchegram {% now 'Y' %}. Brought to you by <a href="mailto:mikhail.pyrev@gmail.com">Mikhail Pyrev</a>.</span>
                     </div>
                 </div>
-            </div>
-        </section>
+            </footer>
 
-        <section id="services" class="bg-light">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-8 mx-auto">
-                        <h2>Services we offer</h2>
-                        <p class="lead">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aut optio velit inventore, expedita quo laboriosam possimus ea consequatur vitae, doloribus consequuntur ex. Nemo assumenda laborum vel, labore ut velit dignissimos.</p>
-                    </div>
+        </div>
+        <!-- /.content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    <!-- Logout Modal-->
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <a class="btn btn-primary" href="login.html">Logout</a>
                 </div>
             </div>
-        </section>
-
-        <section id="contact">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-8 mx-auto">
-                        <h2>Contact us</h2>
-                        <p class="lead">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Vero odio fugiat voluptatem dolor, provident officiis, id iusto! Obcaecati incidunt, qui nihil beatae magnam et repudiandae ipsa exercitationem, in, quo totam.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-    {% endblock %}
-
-    {% block footer %}
-        <footer class="py-5 bg-dark">
-            <div class="container">
-                <p class="m-0 text-center text-white">Copyright &copy; Your Website 2019</p>
-            </div>
-            <!-- /.container -->
-        </footer>
-    {% endblock %}
+        </div>
+    </div>
 
     {% block js %}
         <script src="{% static 'jquery-3.4.1.min.js' %}"></script>
         <script src="{% static 'jquery.easing.min.js' %}"></script>
         <script src="{% static 'popper.min.js' %}"></script>
         <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
-        <script src="{% static 'core/scrolling-nav.js' %}"></script>
+    {% endblock %}
+
+    {% block extrascripts %}
     {% endblock %}
 {% endblock %}

@@ -1,0 +1,20 @@
+{% extends 'core/base_invite.html' %}
+
+{% load telegram %}
+
+{% block title %}Invite to «{{ company|capfirst }}» lunch group{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="card card-login mx-auto mt-5">
+            <div class="card-header">Random lunches at «{{ company|capfirst }}»</div>
+            <div class="card-body">
+                <p>You've been invited to lunch group. Login with your Telegram account to continue.</p>
+                <hr>
+                <div class="text-center">
+                    {% telegram_widget %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

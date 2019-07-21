@@ -1,0 +1,22 @@
+{% extends 'core/base_invite.html' %}
+
+{% block title %}Confirm joining «{{ company|capfirst }}» lunch group{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="card card-login mx-auto mt-5">
+            <div class="card-header">Random lunches at «{{ company|capfirst }}»</div>
+            <div class="card-body">
+                <p>You're about to join random lunch group «{{ company|capfirst }}». Confirm this action.</p>
+                <p>Just close this page to cancel.</p>
+                <hr>
+                <div class="text-center">
+                    <form action="." method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary btn-lg">Join lunch group</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

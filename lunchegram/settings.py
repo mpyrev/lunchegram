@@ -25,7 +25,7 @@ SECRET_KEY = 'x@0ov86q!+hfe)i)wwp62j@oo19e8rhl1o)8rn)p6l+k0dkd*1'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['0a01d3c4.ngrok.io', '127.0.0.1']
+ALLOWED_HOSTS = ['127.0.0.1']
 
 SITE_ID = 1
 
@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
 
     'social_django',
+    'crispy_forms',
 
     'accounts',
     'core',
@@ -57,6 +58,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'lunchegram.urls'
@@ -85,6 +87,8 @@ AUTHENTICATION_BACKENDS = [
     'social_core.backends.telegram.TelegramAuth',
     'django.contrib.auth.backends.ModelBackend',
 ]
+
+LOGIN_REDIRECT_URL = '/dashboard/'
 
 
 # Database
@@ -120,7 +124,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
-LANGUAGE_CODE = 'ru-RU'
+LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
 
@@ -146,3 +150,38 @@ STATICFILES_DIRS = [
 # Social Auth
 
 SOCIAL_AUTH_TELEGRAM_BOT_TOKEN = os.environ.get('LUNCHEGRAM_BOT_TOKEN')
+
+TELEGRAM_WIDGET_DOMAIN = os.environ.get('LUNCHEGRAM_WIDGET_DOMAIN')
+
+SOCIAL_AUTH_PIPELINE = (
+    'social_core.pipeline.social_auth.social_details',
+    'social_core.pipeline.social_auth.social_uid',
+    'social_core.pipeline.social_auth.social_user',
+    'social_core.pipeline.user.get_username',
+    'social_core.pipeline.user.create_user',
+    'accounts.pipeline.mark_telegram_user',
+    'social_core.pipeline.social_auth.associate_user',
+    'social_core.pipeline.social_auth.load_extra_data',
+    'social_core.pipeline.user.user_details',
+)
+
+
+# Telegram
+
+WEBHOOK_BASE_URL = os.environ.get('WEBHOOK_BASE_URL', f'https://{TELEGRAM_WIDGET_DOMAIN}:443')
+
+WEBHOOK_URL_SECRET = os.environ.get('WEBHOOK_URL_SECRET', 'dev')
+
+if not DEBUG:
+    assert WEBHOOK_URL_SECRET != 'dev', 'Set `WEBHOOK_URL_SECRET` environment variable!'
+
+
+# Crispy forms
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+
+try:
+    from .local_settings import *
+except ImportError:
+    pass

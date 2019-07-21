@@ -1,0 +1,16 @@
+{% extends 'core/base_invite.html' %}
+
+{% load telegram %}
+
+{% block title %}Success{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="card card-login mx-auto mt-5">
+            <div class="card-header">Random lunches at «{{ object.company|capfirst }}»</div>
+            <div class="card-body">
+                <p>You've successfully joined lunch group «{{ object.company|capfirst }}».</p>
+            </div>
+        </div>
+    </div>
+{% endblock %}
