@@ -2,6 +2,7 @@ import uuid
 from secrets import token_urlsafe
 
 from django.conf import settings
+from django.core.validators import MaxValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from djchoices import DjangoChoices, ChoiceItem
@@ -55,7 +56,7 @@ class Employee(TimeStampedModel):
         ]
 
 
-class Schedule(TimeStampedModel):
+class LunchSchedule(TimeStampedModel):
     class Day(DjangoChoices):
         monday = ChoiceItem()
         tuesday = ChoiceItem()
@@ -65,15 +66,55 @@ class Schedule(TimeStampedModel):
         saturday = ChoiceItem()
         sunday = ChoiceItem()
 
-    company = models.ForeignKey('core.Company', on_delete=models.CASCADE)
+    company = models.ForeignKey('core.Company', on_delete=models.CASCADE, related_name='lunch_schedules')
     day_of_week = models.CharField(max_length=15, choices=Day.choices)
+    confirm_delta = models.PositiveSmallIntegerField(
+        default=2, validators=[MaxValueValidator(6)],
+        help_text='We will send confirmation request specified number of days before lunch. '
+                  'We send all messages around 10:00 AM.')
+    confirm_timeout = models.PositiveSmallIntegerField(
+        default=24, validators=[MaxValueValidator(6*24)],
+        help_text='User will have specified amount of hours to confirm request. '
+                  'After that time request will be declined automatically.\n'
+                  'At least one day should remain before lunch.')
 
     class Meta:
-        verbose_name = 'schedule'
-        verbose_name_plural = 'schedules'
+        verbose_name = 'lunch schedule'
+        verbose_name_plural = 'lunch schedules'
         unique_together = [
             ['company', 'day_of_week'],
         ]
 
     def __str__(self):
         return self.get_day_of_week_display()
+
+
+class Lunch(TimeStampedModel):
+    schedule = models.ForeignKey(LunchSchedule, on_delete=models.CASCADE, related_name='lunches')
+    date = models.DateField()
+    confirmations_created_at = models.DateTimeField(blank=True, null=True)
+    auto_decline_after = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        verbose_name = 'lunch'
+        verbose_name_plural = 'lunches'
+        unique_together = [
+            ['schedule', 'date'],
+        ]
+
+
+class ConfirmationRequest(TimeStampedModel):
+    class Status(DjangoChoices):
+        new = ChoiceItem()
+        delivered = ChoiceItem()
+        confirmed = ChoiceItem()
+        declined = ChoiceItem()
+        auto_declined = ChoiceItem()
+
+    lunch = models.ForeignKey(Lunch, on_delete=models.CASCADE, related_name='confirmation_requests')
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='confirmation_requests')
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.new)
+
+    class Meta:
+        verbose_name = 'confirmation request'
+        verbose_name_plural = 'confirmation requests'
