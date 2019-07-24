@@ -1,0 +1,18 @@
+{% extends 'core/base_site.html' %}
+
+{% load core %}
+{% load django_tables2 %}
+
+{% block title %}{{ object }}{% endblock %}
+
+{% block h1 %}{{ object }}{% endblock %}
+
+{% block content %}
+    {% invite_url object as invite_url %}
+    <h3>Invite link</h3>
+    {{ invite_url|urlize }}
+
+    <h3>Lunch schedule</h3>
+    <a href="{% url 'lunchschedule_add' company.pk %}" class="btn btn-primary mb-3"><i class="fa fa-plus"></i> Add</a>
+    {% render_table table %}
+{% endblock %}

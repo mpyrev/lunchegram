@@ -45,6 +45,7 @@ INSTALLED_APPS = [
 
     'social_django',
     'crispy_forms',
+    'django_tables2',
 
     'accounts',
     'core',
@@ -179,6 +180,11 @@ if not DEBUG:
 # Crispy forms
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+
+# Django Tables2
+
+DJANGO_TABLES2_TEMPLATE = 'django_tables2/bootstrap4.html'
 
 
 try:

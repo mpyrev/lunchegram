@@ -1,0 +1,15 @@
+{% extends 'core/base_site.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block h1 %}
+    {% if instance.pk %}
+        Edit lunch schedule
+    {% else %}
+        Add lunch schedule
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    {% crispy form %}
+{% endblock %}

@@ -10,8 +10,7 @@
     <p>My companies:</p>
     <ul>
     {% for owned_company in owned_companies %}
-        {% invite_url owned_company as invite_url %}
-        <li>{{ owned_company }} - {{ invite_url|urlize }}</li>
+        <li><a href="{% url 'company_detail' owned_company.pk %}">{{ owned_company }}</a></li>
     {% empty %}
         <li>No companies</li>
     {% endfor %}

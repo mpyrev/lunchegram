@@ -6,15 +6,20 @@ from django.core.validators import MaxValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from djchoices import DjangoChoices, ChoiceItem
-from model_utils.models import TimeStampedModel
+from model_utils.managers import SoftDeletableManagerMixin, SoftDeletableQuerySetMixin
+from model_utils.models import TimeStampedModel, SoftDeletableModel
 
 
-class CompanyQuerySet(models.QuerySet):
+class CompanyQuerySet(SoftDeletableQuerySetMixin, models.QuerySet):
     def privacy_link(self):
         return self.filter(privacy_mode=Company.Privacy.link)
 
 
-class Company(TimeStampedModel):
+class CompanyManager(SoftDeletableManagerMixin, models.Manager.from_queryset(CompanyQuerySet)):
+    _queryset_class = CompanyQuerySet
+
+
+class Company(TimeStampedModel, SoftDeletableModel):
     class Privacy(DjangoChoices):
         link = ChoiceItem()
 
@@ -24,7 +29,7 @@ class Company(TimeStampedModel):
     employees = models.ManyToManyField(settings.AUTH_USER_MODEL, through='core.Employee', related_name='companies')
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name='owned_companies')
 
-    objects = CompanyQuerySet.as_manager()
+    objects = CompanyManager()
 
     class Meta:
         verbose_name = _('company')
@@ -56,18 +61,18 @@ class Employee(TimeStampedModel):
         ]
 
 
-class LunchSchedule(TimeStampedModel):
-    class Day(DjangoChoices):
-        monday = ChoiceItem()
-        tuesday = ChoiceItem()
-        wednesday = ChoiceItem()
-        thursday = ChoiceItem()
-        friday = ChoiceItem()
-        saturday = ChoiceItem()
-        sunday = ChoiceItem()
+class LunchSchedule(TimeStampedModel, SoftDeletableModel):
+    class Weekday(DjangoChoices):
+        monday = ChoiceItem(value=0)
+        tuesday = ChoiceItem(value=1)
+        wednesday = ChoiceItem(value=2)
+        thursday = ChoiceItem(value=3)
+        friday = ChoiceItem(value=4)
+        saturday = ChoiceItem(value=5)
+        sunday = ChoiceItem(value=6)
 
     company = models.ForeignKey('core.Company', on_delete=models.CASCADE, related_name='lunch_schedules')
-    day_of_week = models.CharField(max_length=15, choices=Day.choices)
+    weekday = models.PositiveSmallIntegerField(choices=Weekday.choices)
     confirm_delta = models.PositiveSmallIntegerField(
         default=2, validators=[MaxValueValidator(6)],
         help_text='We will send confirmation request specified number of days before lunch. '
@@ -82,11 +87,11 @@ class LunchSchedule(TimeStampedModel):
         verbose_name = 'lunch schedule'
         verbose_name_plural = 'lunch schedules'
         unique_together = [
-            ['company', 'day_of_week'],
+            ['company', 'weekday'],
         ]
 
     def __str__(self):
-        return self.get_day_of_week_display()
+        return self.get_weekday_display()
 
 
 class Lunch(TimeStampedModel):
