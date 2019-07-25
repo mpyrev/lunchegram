@@ -50,7 +50,8 @@ class Employee(TimeStampedModel):
 
     id = models.UUIDField(default=uuid.uuid4, primary_key=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, limit_choices_to={'has_telegram': True})
     state = models.CharField(max_length=10, choices=State.choices, default=State.online)
 
     class Meta:
@@ -61,65 +62,87 @@ class Employee(TimeStampedModel):
         ]
 
 
-class LunchSchedule(TimeStampedModel, SoftDeletableModel):
-    class Weekday(DjangoChoices):
-        monday = ChoiceItem(value=0)
-        tuesday = ChoiceItem(value=1)
-        wednesday = ChoiceItem(value=2)
-        thursday = ChoiceItem(value=3)
-        friday = ChoiceItem(value=4)
-        saturday = ChoiceItem(value=5)
-        sunday = ChoiceItem(value=6)
-
-    company = models.ForeignKey('core.Company', on_delete=models.CASCADE, related_name='lunch_schedules')
-    weekday = models.PositiveSmallIntegerField(choices=Weekday.choices)
-    confirm_delta = models.PositiveSmallIntegerField(
-        default=2, validators=[MaxValueValidator(6)],
-        help_text='We will send confirmation request specified number of days before lunch. '
-                  'We send all messages around 10:00 AM.')
-    confirm_timeout = models.PositiveSmallIntegerField(
-        default=24, validators=[MaxValueValidator(6*24)],
-        help_text='User will have specified amount of hours to confirm request. '
-                  'After that time request will be declined automatically.\n'
-                  'At least one day should remain before lunch.')
-
-    class Meta:
-        verbose_name = 'lunch schedule'
-        verbose_name_plural = 'lunch schedules'
-        unique_together = [
-            ['company', 'weekday'],
-        ]
-
-    def __str__(self):
-        return self.get_weekday_display()
-
-
 class Lunch(TimeStampedModel):
-    schedule = models.ForeignKey(LunchSchedule, on_delete=models.CASCADE, related_name='lunches')
+    id = models.UUIDField(default=uuid.uuid4, primary_key=True)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='lunches')
     date = models.DateField()
-    confirmations_created_at = models.DateTimeField(blank=True, null=True)
-    auto_decline_after = models.DateTimeField(blank=True, null=True)
+    # confirmations_created_at = models.DateTimeField(blank=True, null=True)
+    # auto_decline_after = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         verbose_name = 'lunch'
         verbose_name_plural = 'lunches'
         unique_together = [
-            ['schedule', 'date'],
+            ['company', 'date'],
         ]
 
 
-class ConfirmationRequest(TimeStampedModel):
-    class Status(DjangoChoices):
-        new = ChoiceItem()
-        delivered = ChoiceItem()
-        confirmed = ChoiceItem()
-        declined = ChoiceItem()
-        auto_declined = ChoiceItem()
-
-    lunch = models.ForeignKey(Lunch, on_delete=models.CASCADE, related_name='confirmation_requests')
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='confirmation_requests')
-    status = models.CharField(max_length=20, choices=Status.choices, default=Status.new)
+class LunchGroup(TimeStampedModel):
+    lunch = models.ForeignKey(Lunch, on_delete=models.CASCADE, related_name='groups')
+    employees = models.ManyToManyField(Employee, through='LunchGroupMember')
 
     class Meta:
-        verbose_name = 'confirmation request'
-        verbose_name_plural = 'confirmation requests'
+        verbose_name = 'lunch group'
+        verbose_name_plural = 'lunch groups'
+
+
+class LunchGroupMember(TimeStampedModel):
+    lunch_group = models.ForeignKey(LunchGroup, on_delete=models.CASCADE, related_name='members')
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = 'lunch group member'
+        verbose_name_plural = 'lunch group members'
+        unique_together = [
+            ['lunch_group', 'employee'],
+        ]
+
+
+# class LunchSchedule(TimeStampedModel, SoftDeletableModel):
+#     class Weekday(DjangoChoices):
+#         monday = ChoiceItem(value=0)
+#         tuesday = ChoiceItem(value=1)
+#         wednesday = ChoiceItem(value=2)
+#         thursday = ChoiceItem(value=3)
+#         friday = ChoiceItem(value=4)
+#         saturday = ChoiceItem(value=5)
+#         sunday = ChoiceItem(value=6)
+#
+#     company = models.ForeignKey('core.Company', on_delete=models.CASCADE, related_name='lunch_schedules')
+#     weekday = models.PositiveSmallIntegerField(choices=Weekday.choices)
+#     confirm_delta = models.PositiveSmallIntegerField(
+#         default=2, validators=[MaxValueValidator(6)],
+#         help_text='We will send confirmation request specified number of days before lunch. '
+#                   'We send all messages around 10:00 AM.')
+#     confirm_timeout = models.PositiveSmallIntegerField(
+#         default=24, validators=[MaxValueValidator(6*24)],
+#         help_text='User will have specified amount of hours to confirm request. '
+#                   'After that time request will be declined automatically.\n'
+#                   'At least one day should remain before lunch.')
+#
+#     class Meta:
+#         verbose_name = 'lunch schedule'
+#         verbose_name_plural = 'lunch schedules'
+#         unique_together = [
+#             ['company', 'weekday'],
+#         ]
+#
+#     def __str__(self):
+#         return self.get_weekday_display()
+#
+#
+# class ConfirmationRequest(TimeStampedModel):
+#     class Status(DjangoChoices):
+#         new = ChoiceItem()
+#         delivered = ChoiceItem()
+#         confirmed = ChoiceItem()
+#         declined = ChoiceItem()
+#         auto_declined = ChoiceItem()
+#
+#     lunch = models.ForeignKey(Lunch, on_delete=models.CASCADE, related_name='confirmation_requests')
+#     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='confirmation_requests')
+#     status = models.CharField(max_length=20, choices=Status.choices, default=Status.new)
+#
+#     class Meta:
+#         verbose_name = 'confirmation request'
+#         verbose_name_plural = 'confirmation requests'

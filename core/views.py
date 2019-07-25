@@ -8,11 +8,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView, CreateView, DetailView
 from django_tables2 import SingleTableMixin
-from telebot import types
 
-from accounts.models import User
-from core.forms import CompanyForm, LunchScheduleForm
-from core.models import Company, Employee, LunchSchedule
+from core.forms import CompanyForm
+from core.models import Company, Employee
 from core.tables import LunchScheduleTable
 from lunchegram import bot
 
@@ -100,41 +98,41 @@ class InviteSuccessView(LoginRequiredMixin, DetailView):
     template_name = 'core/invite_success.html'
 
 
-class CompanyMixin:
-    company_pk_url_kwarg = 'company_id'
-
-    def get_company_queryset(self):
-        return Company.objects.filter(owner=self.request.user)
-
-    def get_company(self, queryset=None):
-        if queryset is None:
-            queryset = self.get_company_queryset()
-        try:
-            return queryset.get(pk=self.kwargs[self.company_pk_url_kwarg])
-        except Company.DoesNotExist:
-            raise Http404
-
-    def dispatch(self, request, *args, **kwargs):
-        self.company = self.get_company()
-        return super().dispatch(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        kwargs['company'] = self.company
-        return super().get_context_data(**kwargs)
-
-
-class LunchScheduleCreateView(LoginRequiredMixin, CompanyMixin, CreateView):
-    model = LunchSchedule
-    form_class = LunchScheduleForm
-
-    def form_valid(self, form):
-        self.object = form.save(commit=False)
-        self.object.company = self.company
-        self.object.save()
-        return redirect(self.get_success_url())
-
-    def get_success_url(self):
-        return reverse('company_detail', args=(self.company.pk,))
+# class CompanyMixin:
+#     company_pk_url_kwarg = 'company_id'
+#
+#     def get_company_queryset(self):
+#         return Company.objects.filter(owner=self.request.user)
+#
+#     def get_company(self, queryset=None):
+#         if queryset is None:
+#             queryset = self.get_company_queryset()
+#         try:
+#             return queryset.get(pk=self.kwargs[self.company_pk_url_kwarg])
+#         except Company.DoesNotExist:
+#             raise Http404
+#
+#     def dispatch(self, request, *args, **kwargs):
+#         self.company = self.get_company()
+#         return super().dispatch(request, *args, **kwargs)
+#
+#     def get_context_data(self, **kwargs):
+#         kwargs['company'] = self.company
+#         return super().get_context_data(**kwargs)
+#
+#
+# class LunchScheduleCreateView(LoginRequiredMixin, CompanyMixin, CreateView):
+#     model = LunchSchedule
+#     form_class = LunchScheduleForm
+#
+#     def form_valid(self, form):
+#         self.object = form.save(commit=False)
+#         self.object.company = self.company
+#         self.object.save()
+#         return redirect(self.get_success_url())
+#
+#     def get_success_url(self):
+#         return reverse('company_detail', args=(self.company.pk,))
 
 
 ##### Telegram webhooks
