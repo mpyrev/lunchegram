@@ -11,7 +11,7 @@ from django_tables2 import SingleTableMixin
 
 from core.forms import CompanyForm
 from core.models import Company, Employee
-from core.tables import LunchScheduleTable
+# from core.tables import LunchScheduleTable
 from lunchegram import bot
 
 
@@ -51,15 +51,11 @@ class CompanyCreateView(LoginRequiredMixin, CreateView):
         return reverse('dashboard')
 
 
-class CompanyDetailView(LoginRequiredMixin, SingleTableMixin, DetailView):
+class CompanyDetailView(LoginRequiredMixin, DetailView):
     model = Company
-    table_class = LunchScheduleTable
 
     def get_queryset(self):
         return super().get_queryset().filter(owner=self.request.user)
-
-    def get_table_data(self):
-        return self.object.lunch_schedules.all()
 
 
 class InviteLoginView(DetailView):
