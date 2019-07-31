@@ -1,63 +1,65 @@
 from abc import ABCMeta
 from itertools import combinations
+from math import exp
 from random import random
-from typing import Tuple
+from typing import Tuple, Set, Dict, List
 
 import attr
 import networkx as nx
 from django.db.models import QuerySet
 from networkx import max_weight_matching
 
-from accounts.models import User
-
-
-#### Interfaces
-
-
-class IPairResolver(metaclass=ABCMeta):
-    def resolve(self, users: QuerySet) -> Tuple[Tuple[User]]:
-        raise NotImplementedError
-
-
-class IEstimator(metaclass=ABCMeta):
-    def get_weight(self, user1: User, user2: User) -> float:
-        raise NotImplementedError
-
-
-#### Maximum weight matching graph algorithm (Blossom algorithm)
-
-
-class DefaultEstimator(IEstimator):
-    def get_weight(self, user1: User, user2: User) -> float:
-        """
-        Returns weight of edge between two users.
-
-        Here we should take into account preferences of both users and combine them into unified weight.
-        """
-        return 1.0 + random()
+from core.models import Employee, LunchGroupMember, Company, LunchGroup
 
 
 @attr.s(slots=True)
-class Edge:
-    weight = attr.ib(type=float)
+class LunchMapEmployee:
+    employee = attr.ib(type=Employee)
+
+
+class DefaultEstimator:
+    def __init__(self, lunch_map: Dict[]):
+        self.lunch_map = None
+
+    def get_weight(self, employee1: Employee, employee2: Employee) -> float:
+        """
+        Returns weight of edge between two employees.
+
+        Here we should take into account preferences of both employees and combine them into unified weight.
+        """
+        weight = random()
+
+        members = LunchGroupMember.objects.filter(employee=employee1, lunchgroup__employees=employee2).select_related('lunch').order_by('-lunch__date')
+        if members.exists():
+            # Apply decay so employees from lunches further away have better chances to meet again if
+            # there are no fresh employees
+            weight += exp(-8*x*x)
+        else:
+            # Never had lunch together bonus
+            weight += 2
+
+        return weight
 
 
 @attr.s
-class MaximumWeightGraphResolver(IPairResolver):
-    estimator_class = attr.ib(type=IEstimator, default=DefaultEstimator)
+class MaximumWeightGraphResolver:
+    estimator_class = attr.ib(default=DefaultEstimator)
 
-    def get_estimator(self) -> IEstimator:
+    def make_lunch_map(self, company: Company):
+        LunchGroup.objects.filter(company=company)
+
+    def get_estimator(self):
         return self.estimator_class()
 
-    def resolve(self, users: QuerySet) -> Tuple[Tuple[User]]:
+    def resolve(self, company: Company, employees: List[Employee]) -> Set[Tuple[Employee]]:
         graph = nx.Graph()
         estimator = self.get_estimator()
 
         # Fill the graph
-        graph.add_nodes_from(users)
-        for user1, user2 in combinations(users, 2):
-            weight = estimator.get_weight(user1, user2)
-            graph.add_weighted_edges_from([(user1, user2, weight)])
+        graph.add_nodes_from(employees)
+        for employee1, employee2 in combinations(employees, 2):
+            weight = estimator.get_weight(employee1, employee2)
+            graph.add_weighted_edges_from([(employee1, employee2, weight)])
 
         # Run matching algorithm
         matching = max_weight_matching(graph)
