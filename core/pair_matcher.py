@@ -1,6 +1,6 @@
 from itertools import combinations
 from random import random, choice
-from typing import Tuple, Set, List
+from typing import Set, List, FrozenSet
 
 import attr
 import networkx as nx
@@ -62,7 +62,7 @@ class MaximumWeightGraphMatcher:
     def get_estimator(self):
         return self.estimator_class()
 
-    def match(self, company: Company, employees: List[Employee]) -> Set[Tuple[Employee]]:
+    def match(self, company: Company, employees: List[Employee]) -> Set[FrozenSet[Employee]]:
         """
         Blossom graph matching algorithm.
         If number of users is odd we have to add copy of one of users to make a group of three.

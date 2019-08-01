@@ -16,6 +16,7 @@ class CustomUserManager(UserManager):
 
 class User(AbstractUser):
     has_telegram = models.BooleanField(default=False)
+    telegram_chat_id = models.CharField(max_length=255, blank=True, null=True)
 
     objects = CustomUserManager()
 
