@@ -1,12 +1,9 @@
-from abc import ABCMeta
 from itertools import combinations
-from math import exp
-from random import random
-from typing import Tuple, Set, Dict, List
+from random import random, choice
+from typing import Tuple, Set, List
 
 import attr
 import networkx as nx
-from django.db.models import QuerySet
 from networkx import max_weight_matching
 
 from core.models import Employee, LunchGroupMember, Company, LunchGroup
@@ -18,8 +15,8 @@ class LunchMapEmployee:
 
 
 class DefaultEstimator:
-    def __init__(self, lunch_map: Dict[]):
-        self.lunch_map = None
+    def __init__(self, lunch_map=None):
+        self.lunch_map = lunch_map
 
     def get_weight(self, employee1: Employee, employee2: Employee) -> float:
         """
@@ -33,7 +30,9 @@ class DefaultEstimator:
         if members.exists():
             # Apply decay so employees from lunches further away have better chances to meet again if
             # there are no fresh employees
-            weight += exp(-8*x*x)
+            # TODO: make actual decaying weight
+            # weight += exp(-8*x*x)
+            pass
         else:
             # Never had lunch together bonus
             weight += 2
@@ -42,7 +41,12 @@ class DefaultEstimator:
 
 
 @attr.s
-class MaximumWeightGraphResolver:
+class Node:
+    employee = attr.ib(type=Employee)
+
+
+@attr.s
+class MaximumWeightGraphMatcher:
     estimator_class = attr.ib(default=DefaultEstimator)
 
     def make_lunch_map(self, company: Company):
@@ -51,16 +55,34 @@ class MaximumWeightGraphResolver:
     def get_estimator(self):
         return self.estimator_class()
 
-    def resolve(self, company: Company, employees: List[Employee]) -> Set[Tuple[Employee]]:
+    def match(self, company: Company, employees: List[Employee]) -> Set[Tuple[Employee]]:
+        """
+        Uses Blossom graph matching algorithm to match pairs
+        If number of users is odd we have to add copy of one of users to make a group of three.
+        """
         graph = nx.Graph()
         estimator = self.get_estimator()
 
+        # Select lucky employee to be part of a group of 3 if needed
+        employees = list(employees)
+        if len(employees) % 2:
+            lucky_employee = choice(employees)
+            employees.append(lucky_employee)
+
         # Fill the graph
-        graph.add_nodes_from(employees)
-        for employee1, employee2 in combinations(employees, 2):
-            weight = estimator.get_weight(employee1, employee2)
-            graph.add_weighted_edges_from([(employee1, employee2, weight)])
+        nodes = [Node(e) for e in employees]
+        graph.add_nodes_from(nodes)
+        for node1, node2 in combinations(nodes, 2):
+            if node1.employee == node2.employee:
+                continue
+            weight = estimator.get_weight(node1.employee, node2.employee)
+            graph.add_weighted_edges_from([(node1, node2, weight)])
 
         # Run matching algorithm
         matching = max_weight_matching(graph)
-        return matching
+
+        # Find group of three if any
+        for n1, n2 in matching:
+            pass
+
+        return {(n1.employee, n2.employee) for n1, n2 in matching}
