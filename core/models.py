@@ -9,6 +9,20 @@ from model_utils.managers import SoftDeletableManagerMixin, SoftDeletableQuerySe
 from model_utils.models import TimeStampedModel, SoftDeletableModel
 
 
+def sane_repr(*attrs):
+    if 'id' not in attrs and 'pk' not in attrs:
+        attrs = ('id', ) + attrs
+
+    def _repr(self):
+        cls = type(self).__name__
+
+        pairs = ('%s=%s' % (a, repr(getattr(self, a, None))) for a in attrs)
+
+        return u'<%s at 0x%x: %s>' % (cls, id(self), ', '.join(pairs))
+
+    return _repr
+
+
 class CompanyQuerySet(SoftDeletableQuerySetMixin, models.QuerySet):
     def privacy_link(self):
         return self.filter(privacy_mode=Company.Privacy.link)
@@ -59,6 +73,8 @@ class Employee(TimeStampedModel):
         unique_together = [
             ['company', 'user'],
         ]
+
+    __repr__ = sane_repr('user', 'state')
 
 
 class Lunch(TimeStampedModel):
