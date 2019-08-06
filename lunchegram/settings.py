@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+from celery.schedules import crontab
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -127,7 +129,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 
@@ -185,6 +187,20 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 # Django Tables2
 
 DJANGO_TABLES2_TEMPLATE = 'django_tables2/bootstrap4.html'
+
+
+# Celery
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+
+CELERY_TIMEZONE = TIME_ZONE
+
+CELERY_BEAT_SCHEDULE = {
+    'run-everything': {
+        'task': 'core.tasks.run_everything',
+        'schedule': crontab(day_of_week='1', hour='10', minute='0'),  # Every monday at 10AM
+    },
+}
 
 
 try:

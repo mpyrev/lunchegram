@@ -104,6 +104,8 @@ class LunchGroup(TimeStampedModel):
 class LunchGroupMember(TimeStampedModel):
     lunch_group = models.ForeignKey(LunchGroup, on_delete=models.CASCADE, related_name='members')
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    notified_at = models.DateTimeField(blank=True, null=True)
+    notification_message_id = models.PositiveIntegerField(blank=True, null=True)
 
     class Meta:
         verbose_name = 'lunch group member'
@@ -111,6 +113,10 @@ class LunchGroupMember(TimeStampedModel):
         unique_together = [
             ['lunch_group', 'employee'],
         ]
+
+    @property
+    def is_notified(self):
+        return self.notified_at is not None
 
 
 # class LunchSchedule(TimeStampedModel, SoftDeletableModel):
