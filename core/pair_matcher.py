@@ -4,7 +4,6 @@ from typing import Set, List, FrozenSet
 
 import attr
 import networkx as nx
-from networkx import max_weight_matching
 
 from core.models import Employee, LunchGroupMember, Company, LunchGroup
 
@@ -41,7 +40,7 @@ class DefaultEstimator:
         return weight
 
 
-@attr.s(cmp=False)
+@attr.s(cmp=False, slots=True)
 class Node:
     employee = attr.ib(type=Employee)
 
@@ -86,7 +85,7 @@ class MaximumWeightGraphMatcher:
             graph.add_weighted_edges_from([(node1, node2, weight)])
 
         # Run matching algorithm
-        matching = max_weight_matching(graph)
+        matching = nx.max_weight_matching(graph)
 
         # Find group of three if any
         group_map = {}
