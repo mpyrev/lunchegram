@@ -41,9 +41,15 @@ def notify_lunch_group_member(pk):
     user = member.employee.user
     if user.telegram_account:
         lunch_group = member.lunch_group
-        partners = LunchGroupMember.objects.filter(lunch_group=lunch_group).exclude(pk=pk)
-        partner = partners.first()
-        message = f'Hello! Your next random lunch partner is here: [{partner.employee.user.get_full_name()}](tg://user?id={partner.employee.user.telegram_account.uid})'
+        partners = list(LunchGroupMember.objects.filter(lunch_group=lunch_group).exclude(pk=pk))
+        if len(partners) == 1:
+            partner_user = partners[0].employee.user
+            message = (f'Hello! Your next random lunch partner is here: [{partner_user.get_full_name()}]'
+                       f'(tg://user?id={partner_user.telegram_account.uid})')
+        else:
+            partner_users = (p.employee.user for p in partners)
+            partner_links = (f'[{u.get_full_name()}](tg://user?id={u.telegram_account.uid})' for u in partner_users)
+            message = 'Hello! Your next random lunch partners are here: {}'.format(', '.join(partner_links))
         (
             send_telegram_message.s(user.pk, message, parse_mode='Markdown') |
             mark_lunch_group_member_as_notified.s(pk)
