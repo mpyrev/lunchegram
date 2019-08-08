@@ -10,3 +10,4 @@ celerybeat-schedule.*
 celerybeat.pid
 /*.ini
 /.python-version
+.env

@@ -12,22 +12,41 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+import environ
+import sentry_sdk
 from celery.schedules import crontab
+from sentry_sdk.integrations.django import DjangoIntegration
 
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+# Env configuration
+
+env = environ.Env(
+    DEBUG=(bool, False),
+    SECRET_KEY=str,
+    ALLOWED_HOSTS=(list, ['127.0.0.1']),
+    TELEGRAM_BOT_TOKEN=str,
+    TELEGRAM_WIDGET_DOMAIN=str,
+    WEBHOOK_BASE_URL=str,
+    WEBHOOK_URL_SECRET=str,
+    SENTRY_DSN=(str, ''),
+)
+
+env.read_env()
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'x@0ov86q!+hfe)i)wwp62j@oo19e8rhl1o)8rn)p6l+k0dkd*1'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = env('ALLOWED_HOSTS')
 
 SITE_ID = 1
 
@@ -98,10 +117,7 @@ LOGIN_REDIRECT_URL = '/dashboard/'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+    'default': env.db(),
 }
 
 
@@ -152,9 +168,9 @@ STATICFILES_DIRS = [
 
 # Social Auth
 
-SOCIAL_AUTH_TELEGRAM_BOT_TOKEN = os.environ.get('LUNCHEGRAM_BOT_TOKEN')
+SOCIAL_AUTH_TELEGRAM_BOT_TOKEN = env('TELEGRAM_BOT_TOKEN')
 
-TELEGRAM_WIDGET_DOMAIN = os.environ.get('LUNCHEGRAM_WIDGET_DOMAIN')
+TELEGRAM_WIDGET_DOMAIN = env('TELEGRAM_WIDGET_DOMAIN')
 
 SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.social_details',
@@ -171,12 +187,9 @@ SOCIAL_AUTH_PIPELINE = (
 
 # Telegram
 
-WEBHOOK_BASE_URL = os.environ.get('WEBHOOK_BASE_URL', f'https://{TELEGRAM_WIDGET_DOMAIN}:443')
+WEBHOOK_BASE_URL = env('WEBHOOK_BASE_URL')
 
-WEBHOOK_URL_SECRET = os.environ.get('WEBHOOK_URL_SECRET', 'dev')
-
-if not DEBUG:
-    assert WEBHOOK_URL_SECRET != 'dev', 'Set `WEBHOOK_URL_SECRET` environment variable!'
+WEBHOOK_URL_SECRET = env('WEBHOOK_URL_SECRET')
 
 
 # Crispy forms
@@ -203,7 +216,9 @@ CELERY_BEAT_SCHEDULE = {
 }
 
 
-try:
-    from .local_settings import *
-except ImportError:
-    pass
+# Sentry logging
+
+sentry_sdk.init(
+    dsn=env('SENTRY_DSN'),
+    integrations=[DjangoIntegration()],
+)
