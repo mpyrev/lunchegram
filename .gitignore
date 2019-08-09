@@ -6,6 +6,7 @@ local_settings.py
 *.sqlite3
 node_modules/
 *.sock
+celerybeat-schedule
 celerybeat-schedule.*
 celerybeat.pid
 /*.ini
