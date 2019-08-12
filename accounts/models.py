@@ -5,6 +5,8 @@ from django.db import models
 from django.utils.functional import cached_property
 from social_django.models import UserSocialAuth
 
+from lunchegram import bot
+
 
 class CustomUserManager(UserManager):
     def get_from_telegram_uid(self, uid: int) -> Optional['User']:
@@ -27,3 +29,6 @@ class User(AbstractUser):
         except UserSocialAuth.DoesNotExist:
             account = None
         return account
+
+    def send_message(self, text):
+        bot.send_message(self.telegram_chat_id, text)

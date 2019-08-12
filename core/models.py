@@ -119,6 +119,12 @@ class LunchGroupMember(TimeStampedModel):
         return self.notified_at is not None
 
 
+class TelegramChat(TimeStampedModel):
+    """Stores every chat with the bot (for possible future use)"""
+    chat_id = models.CharField(max_length=255, unique=True)
+    uid = models.CharField(max_length=255, unique=True)
+
+
 # class LunchSchedule(TimeStampedModel, SoftDeletableModel):
 #     class Weekday(DjangoChoices):
 #         monday = ChoiceItem(value=0)
