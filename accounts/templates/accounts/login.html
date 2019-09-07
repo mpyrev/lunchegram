@@ -1,18 +1,18 @@
-{% extends 'core/base_site.html' %}
+{% extends 'core/base_invite.html' %}
 
 {% load telegram %}
 
-{% block content %}
-    <section id="about">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8 mx-auto">
-                    <h2>To continue login with your Telegram account</h2>
-                    <p class="lead">
-                        {% telegram_widget %}
-                    </p>
+{% block title %}Log in{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="card card-login mx-auto mt-5">
+            <div class="card-header">To continue login with your Telegram account</div>
+            <div class="card-body">
+                <div class="text-center">
+                    {% telegram_widget %}
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 {% endblock %}
