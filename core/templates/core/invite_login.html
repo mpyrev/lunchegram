@@ -1,15 +1,16 @@
 {% extends 'core/base_invite.html' %}
 
 {% load telegram %}
+{% load i18n %}
 
-{% block title %}Invite to «{{ company|capfirst }}» lunch group{% endblock %}
+{% block title %}{% blocktrans %}Invite to «{{ company|capfirst }}» lunch group{% endblocktrans %}{% endblock %}
 
 {% block body %}
     <div class="container">
         <div class="card card-login mx-auto mt-5">
-            <div class="card-header">Random lunches at «{{ company|capfirst }}»</div>
+            <div class="card-header">{% blocktrans %}Random lunches at «{{ company|capfirst }}»{% endblocktrans %}</div>
             <div class="card-body">
-                <p>You've been invited to lunch group. Login with your Telegram account to continue.</p>
+                <p>{% blocktrans %}You've been invited to lunch group. Login with your Telegram account to continue.{% endblocktrans %}</p>
                 <hr>
                 <div class="text-center">
                     {% telegram_widget %}
