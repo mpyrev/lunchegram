@@ -1,0 +1,121 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-09-17 23:03+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: accounts/admin.py:12
+msgid "Personal info"
+msgstr ""
+
+#: accounts/admin.py:13
+msgid "Permissions"
+msgstr ""
+
+#: accounts/admin.py:16
+msgid "Important dates"
+msgstr ""
+
+#: core/models.py:48
+msgid "company"
+msgstr ""
+
+#: core/models.py:49
+msgid "companies"
+msgstr ""
+
+#: core/models.py:71
+msgid "employee"
+msgstr ""
+
+#: core/models.py:72
+msgid "employees"
+msgstr ""
+
+#: core/templates/core/index.html:45
+msgid "Add random lunches to your office"
+msgstr ""
+
+#: core/templates/core/index.html:58
+msgid ""
+"\n"
+"                            Lunchegram is a free and open source service for "
+"making pairs for random lunch.<br>\n"
+"                            Just add your company and send invite link to "
+"all your coworkers!\n"
+"                            "
+msgstr ""
+
+#: core/templates/core/invite_confirm.html:5
+#, python-format
+msgid "Confirm joining «%(name)s» lunch group"
+msgstr "Подтвердите присоединение к ланч-группе «%(name)s»"
+
+#: core/templates/core/invite_confirm.html:10
+#: core/templates/core/invite_login.html:11
+#: core/templates/core/invite_success.html:10
+#, python-format
+msgid "Random lunches at «%(name)s»"
+msgstr "Рандом-ланчи в «%(name)s»"
+
+#: core/templates/core/invite_confirm.html:12
+#, python-format
+msgid "You're about to join lunch group «%(name)s». Confirm this action."
+msgstr ""
+"Вы присоединяетесь к ланч-группе «%(name)s». Подтвердите это "
+"действие."
+
+#: core/templates/core/invite_confirm.html:17
+msgid "Join lunch group"
+msgstr "Присоединиться к ланч-группе"
+
+#: core/templates/core/invite_login.html:6
+#, python-format
+msgid "Invite to «%(name)s» lunch group"
+msgstr "Приглашение в ланч-группу «%(name)s»"
+
+#: core/templates/core/invite_login.html:13
+msgid ""
+"You've been invited to lunch group. Login with your Telegram account to "
+"continue."
+msgstr ""
+"Вас пригласили в ланч-группу. Войдите со своим аккаунтом Telegram, чтобы "
+"продолжить."
+
+#: core/templates/core/invite_login.html:14
+msgid ""
+"Don't forget to allow us to send messages to you or we wouldn't be able to "
+"notify you about upcoming lunch!"
+msgstr ""
+"Не забудьте разрешить отправлять вам сообщения, иначе мы не сможем уведомить "
+"вас о предстоящем ланче!"
+
+#: core/templates/core/invite_success.html:5
+msgid "Success"
+msgstr "Успех"
+
+#: core/templates/core/invite_success.html:12
+#, python-format
+msgid "You've successfully joined lunch group «%(name)s»!"
+msgstr "Вы успешно присоединились к ланч-группе «%(name)s»!"
+
+#: core/templates/core/invite_success.html:13
+msgid ""
+"Now you just have to wait until we match your lunchmate. We'll send link to "
+"their account on Monday."
+msgstr ""
+"Теперь вам нужно просто дождаться, пока мы подберём вам собеседника. Мы "
+"отправим ссылку на его/её аккаунт в понедельник."

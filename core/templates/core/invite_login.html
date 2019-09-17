@@ -3,14 +3,15 @@
 {% load telegram %}
 {% load i18n %}
 
-{% block title %}{% blocktrans %}Invite to «{{ company|capfirst }}» lunch group{% endblocktrans %}{% endblock %}
+{% block title %}{% blocktrans with name=object.name|capfirst %}Invite to «{{ name }}» lunch group{% endblocktrans %}{% endblock %}
 
 {% block body %}
     <div class="container">
         <div class="card card-login mx-auto mt-5">
-            <div class="card-header">{% blocktrans %}Random lunches at «{{ company|capfirst }}»{% endblocktrans %}</div>
+            <div class="card-header">{% blocktrans with name=object.name|capfirst %}Random lunches at «{{ name }}»{% endblocktrans %}</div>
             <div class="card-body">
                 <p>{% blocktrans %}You've been invited to lunch group. Login with your Telegram account to continue.{% endblocktrans %}</p>
+                <p>{% blocktrans %}Don't forget to allow us to send messages to you or we wouldn't be able to notify you about upcoming lunch!{% endblocktrans %}</p>
                 <hr>
                 <div class="text-center">
                     {% telegram_widget %}

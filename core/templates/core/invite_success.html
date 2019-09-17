@@ -1,16 +1,16 @@
 {% extends 'core/base_invite.html' %}
 
-{% load telegram %}
+{% load i18n %}
 
-{% block title %}Success{% endblock %}
+{% block title %}{% trans 'Success' %}{% endblock %}
 
 {% block body %}
     <div class="container">
         <div class="card card-login mx-auto mt-5">
-            <div class="card-header">Random lunches at «{{ object.company|capfirst }}»</div>
+            <div class="card-header">{% blocktrans with name=object.company.name|capfirst %}Random lunches at «{{ name }}»{% endblocktrans %}</div>
             <div class="card-body">
-                <p>You've successfully joined lunch group «{{ object.company|capfirst }}».</p>
-                <p>Please, send <code>/start</code> to the Lunchegram bot.</p>
+                <p>{% blocktrans with name=object.company.name|capfirst %}You've successfully joined lunch group «{{ name }}»!{% endblocktrans %}</p>
+                <p>{% blocktrans %}Now you just have to wait until we match your lunchmate. We'll send link to their account on Monday.{% endblocktrans %}</p>
             </div>
         </div>
     </div>
