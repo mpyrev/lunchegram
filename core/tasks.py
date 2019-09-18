@@ -69,5 +69,5 @@ def mark_lunch_group_member_as_notified(message_id, pk):
 @celery_app.task
 def send_telegram_message(user_id: int, message: str, parse_mode: str = None) -> int:
     user = User.objects.get(pk=user_id)
-    message = bot.send_message(user.telegram_chat_id, message, parse_mode=parse_mode)
+    message = bot.send_message(user.telegram_account.uid, message, parse_mode=parse_mode)
     return message.message_id
