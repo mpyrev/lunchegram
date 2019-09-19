@@ -19,13 +19,9 @@ def infuse_user():
             uid = message.from_user.id
             user = User.objects.get_from_telegram_uid(uid)
 
-            if user:
-                user.telegram_chat_id = message.chat.id
-
-            with transaction.atomic():
-                if user:
-                    user.save()
-                TelegramChat.objects.get_or_create(uid=uid, defaults=dict(chat_id=message.chat.id))
+            if hasattr(message, 'chat'):
+                with transaction.atomic():
+                    TelegramChat.objects.get_or_create(uid=uid, defaults=dict(chat_id=message.chat.id))
 
             args = (user,) + args
             return func(*args, **kwargs)
