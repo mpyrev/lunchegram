@@ -88,8 +88,8 @@ class InviteConfirmView(LoginRequiredMixin, DetailView):
         if request.user.has_telegram and request.user.telegram_account:
             send_telegram_message.delay(
                 request.user.pk,
-                _('Hi! You''ve successfully joined lunch group «{}». '
-                  'You may manage your participation with /offline and /online commands.').format(company.name))
+                _("Hi! You've successfully joined lunch group «{}». "
+                  "You may manage your participation with /offline and /online commands.").format(company.name))
         return redirect(self.get_success_url())
 
     def get_success_url(self):
