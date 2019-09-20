@@ -7,11 +7,12 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView, CreateView, DetailView
-from django_tables2 import SingleTableMixin
+from django.utils.translation import gettext as _
 
 from core.forms import CompanyForm
 from core.models import Company, Employee
 # from core.tables import LunchScheduleTable
+from core.tasks import send_telegram_message
 from lunchegram import bot
 
 
@@ -79,10 +80,16 @@ class InviteConfirmView(LoginRequiredMixin, DetailView):
     template_name = 'core/invite_confirm.html'
 
     def post(self, request, *args, **kwargs):
+        company = self.get_object()
         self.employee = Employee.objects.get_or_create(
-            company=self.get_object(),
+            company=company,
             user=request.user,
         )[0]
+        if request.user.has_telegram and request.user.telegram_account:
+            send_telegram_message.delay(
+                request.user.telegram_account.uid,
+                _('Hi! You''ve successfully joined lunch group «{}». '
+                  'You may manage your participation with /offline and /online commands.').format(company.name))
         return redirect(self.get_success_url())
 
     def get_success_url(self):
