@@ -1,3 +1,4 @@
+import celery
 from django.db import transaction
 from django.utils import timezone
 
@@ -19,18 +20,23 @@ def create_lunch_groups():
 
 
 @celery_app.task
-@transaction.atomic()
 def create_lunch_groups_for_company(company_id):
-    company = Company.objects.get(pk=company_id)
-    lunch = Lunch.objects.create(company=company, date=timezone.localdate())
-    employees = Employee.objects.filter(company=company, state=Employee.State.online)
-    matcher = MaximumWeightGraphMatcher()
-    groups = matcher.match(company, employees)
-    for group in groups:
-        lunch_group = LunchGroup.objects.create(lunch=lunch)
-        for employee in group:
-            member = LunchGroupMember.objects.create(lunch_group=lunch_group, employee=employee)
-            notify_lunch_group_member.delay(member.pk)
+    tasks = []
+
+    with transaction.atomic():
+        company = Company.objects.get(pk=company_id)
+        lunch = Lunch.objects.create(company=company, date=timezone.localdate())
+        employees = Employee.objects.filter(company=company, state=Employee.State.online)
+        matcher = MaximumWeightGraphMatcher()
+        groups = matcher.match(company, employees)
+        for group in groups:
+            lunch_group = LunchGroup.objects.create(lunch=lunch)
+            for employee in group:
+                member = LunchGroupMember.objects.create(lunch_group=lunch_group, employee=employee)
+                tasks.append(notify_lunch_group_member.s(member.pk))
+
+    job = celery.group(tasks)
+    job.apply_async()
 
 
 @celery_app.task
