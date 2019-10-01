@@ -222,6 +222,11 @@ CELERY_BEAT_SCHEDULE = {
 }
 
 
+# Redis
+
+REDIS_URL = 'redis://localhost:6379/0'
+
+
 # Sentry logging
 
 sentry_sdk.init(
