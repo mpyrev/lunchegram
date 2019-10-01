@@ -1,0 +1,5 @@
+start - Hello message
+groups - List of your lunch groups
+join - Enter invite token and join lunch group
+online - Go online in chosen lunch group
+offline - Go offline in chosen lunch group
