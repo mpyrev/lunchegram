@@ -54,7 +54,7 @@ def notify_lunch_group_member(pk):
                        f'(tg://user?id={partner_user.telegram_account.uid})')
         else:
             partner_users = (p.employee.user for p in partners)
-            partner_links = (f'[{u.get_full_name()}](tg://user?id={u.telegram_account.uid})' for u in partner_users)
+            partner_links = (f'[{u.get_full_name() or u.telegram_account.uid}](tg://user?id={u.telegram_account.uid})' for u in partner_users)
             message = 'Hello! Your next random lunch partners are here: {}'.format(', '.join(partner_links))
         (
             send_telegram_message.s(user.pk, message, parse_mode='Markdown') |

@@ -43,6 +43,8 @@ def process_join_answer(message):
         username = get_username(strategy, from_user.__dict__, backend)['username']
         with transaction.atomic():
             user = create_user(strategy, from_user.__dict__, backend, username=username)['user']
+            user.first_name = from_user.first_name or ''
+            user.last_name = from_user.last_name or ''
             user.has_telegram = True
             user.telegram_chat_id = message.chat.id
             user.save()
