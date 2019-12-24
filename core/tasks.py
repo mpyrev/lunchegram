@@ -19,7 +19,7 @@ def run_everything():
 
 @celery_app.task
 def create_lunch_groups():
-    for company in Company.objects.all():
+    for company in Company.objects.lunches_enabled():
         employees = Employee.objects.filter(company=company, state=Employee.State.online)
         check_employee_tasks = [check_employee_in_telegram.si(pk) for pk in employees.values_list('pk', flat=True)]
         job = celery.group(check_employee_tasks) | create_lunch_groups_for_company.si(company.pk)

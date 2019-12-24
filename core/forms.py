@@ -8,7 +8,7 @@ from core.models import Company
 class CompanyForm(forms.ModelForm):
     class Meta:
         model = Company
-        fields = ['name', 'privacy_mode']
+        fields = ['name', 'privacy_mode', 'lunches_enabled']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

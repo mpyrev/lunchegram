@@ -10,7 +10,7 @@
     <p>My companies:</p>
     <ul>
     {% for owned_company in owned_companies %}
-        <li><a href="{% url 'company_detail' owned_company.pk %}">{{ owned_company }}</a></li>
+        <li><a href="{% url 'company_detail' owned_company.pk %}">{{ owned_company }}</a>{% if not owned_company.lunches_enabled %} [lunches disabled]{% endif %}</li>
     {% empty %}
         <li>No companies</li>
     {% endfor %}

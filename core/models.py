@@ -27,6 +27,9 @@ class CompanyQuerySet(SoftDeletableQuerySetMixin, models.QuerySet):
     def privacy_link(self):
         return self.filter(privacy_mode=Company.Privacy.link)
 
+    def lunches_enabled(self):
+        return self.filter(lunches_enabled=True)
+
 
 class CompanyManager(SoftDeletableManagerMixin, models.Manager.from_queryset(CompanyQuerySet)):
     _queryset_class = CompanyQuerySet
@@ -41,6 +44,7 @@ class Company(TimeStampedModel, SoftDeletableModel):
     invite_token = models.CharField(max_length=50, blank=True, null=True, unique=True)
     employees = models.ManyToManyField(settings.AUTH_USER_MODEL, through='core.Employee', related_name='companies')
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name='owned_companies')
+    lunches_enabled = models.BooleanField(_('lunches enabled'), default=True)
 
     objects = CompanyManager()
 

@@ -3,8 +3,8 @@
 {% load crispy_forms_tags %}
 
 {% block h1 %}
-    {% if instance.pk %}
-        Edit company {{ instance }}
+    {% if object.pk %}
+        Edit company «{{ object }}»
     {% else %}
         Add company
     {% endif %}

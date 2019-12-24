@@ -1,13 +1,14 @@
 {% extends 'core/base_site.html' %}
 
 {% load core %}
-{#{% load django_tables2 %}#}
+{% load i18n %}
 
 {% block title %}{{ object }}{% endblock %}
 
 {% block h1 %}{{ object }}{% endblock %}
 
 {% block content %}
+    <a class="btn btn-outline-primary" href="{% url 'company_update' object.pk %}">{% trans 'Edit' %}</a>
     {% invite_url object as invite_url %}
     <h3>Invite link</h3>
     {{ invite_url|urlize }}
