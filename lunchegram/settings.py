@@ -217,10 +217,10 @@ CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 CELERY_TIMEZONE = TIME_ZONE
 
 CELERY_BEAT_SCHEDULE = {
-    'run-everything': {
-        'task': 'core.tasks.run_everything',
-        'schedule': crontab(day_of_week='1', hour='18', minute='0'),  # Every monday at 6PM
-    },
+    # 'run-everything': {
+    #     'task': 'core.tasks.run_everything',
+    #     'schedule': crontab(day_of_week='1', hour='18', minute='0'),  # Every monday at 6PM
+    # },
 }
 
 
